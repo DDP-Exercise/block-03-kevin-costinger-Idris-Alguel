@@ -39,19 +39,83 @@
  *     the scope of his variables and of course, makes use of
  *     event delegation, to keep his event listeners tidied up!
  *
- *     You - 2026-03-25
+ *     Idris Algül - 2026-04-09
  *******************************************************/
 let sumExpenses = 0; //Use this variable to keep the sum up to date.
+document.querySelector("form").addEventListener("submit", submitForm);
 
-function submitForm(e){
+function submitForm(e) {
     //TODO: Prevent the default behavior of the submit button.
     //TODO: Validate the form. If everything is fine, add the expense to the tracker and reset the form.
+    //verhindert neuladung
+    e.preventDefault();
+
+    let dateInput = document.getElementById("date");
+    let amountInput = document.getElementById("amount");
+    let expenseInput = document.getElementById("expense");
+
+    let dateValue = dateInput.value;                            //speichert Datum feld welches in date feld geschrieben wurde und .value holt den text was der Nutzer eingetippt hat
+    let amountValue = parseFloat(amountInput.value);    //parseFloat verwandelt den Text in Kommazahl um
+    let expenseValue = expenseInput.value;
+
+
+    if (isEmpty(dateValue) === true) {                  // prüft ob das feld leer ist
+        dateInput.focus();                              // setzt den cursor in das leere Feld
+        return;
+    }
+
+    if (amountValue < 0.01 || isNaN(amountValue)) {     // ist es kleiner als 0.01 oder gar kein gültiger Zahl
+        amountInput.focus();                            // wenn es falsch ist dann zurück mit den cursor ins Betrags Feld
+        return;
+    }
+
+    if (expenseValue.length < 3) {                      // zählt ob es weniger als 3 buchstaben ist
+        expenseInput.focus();                           // wenn es so ist dann geht die cursor ins expense feld
+        return;
+    }
+    let tableBody = document.querySelector("#expenses tbody");
+    let newRow = "<tr>";
+    newRow += "<td>" + dateValue + "</td>";     // Zelle 1 Datum
+    newRow += "<td>" + amountValue + "</td>";   // Zelle 2 Geld
+    newRow += "<td>" + expenseValue + "</td>";  // Zelle 3 Beschreibung
+    newRow += "<td><button class='delete'>Delete</button></td>";    // Zelle 4 Löschknopf
+    newRow += "</tr>";
+
+    tableBody.innerHTML += newRow;      // neue Zeile darunter
+
+    sumExpenses = sumExpenses + amountValue;       // altes Guthaben wird mit neue Ausgabe gerechner
+
+    document.getElementById("expenseSum").innerHTML = formatEuro(sumExpenses);
+    document.querySelector("form").reset();
 }
+
+
+
+    let table = document.getElementById("expenses");
+
+    table.addEventListener("click", function(e) {   // wenn irgendwo in der Tabelle geklick wird
+        let button = e.target;                                        // dann wird das angeklickte ding gespeichert
+
+        if (button.className === "delete") {                                     // prüft ob angeklickte element in der css die klasse "delete" hat damit wie sicherstellen können dass nur beim lösch button klicken et was passiert
+
+            let cell = button.parentElement;
+            let row = cell.parentElement;
+
+            let amountText = row.cells[1].innerHTML;
+            let amountNumber = parseFloat(amountText);
+
+            sumExpenses = sumExpenses - amountNumber;
+
+            document.getElementById("expenseSum").innerHTML = formatEuro(sumExpenses);
+            row.remove();
+
+        }
+    });
 
 
 /*****************************
  * DO NOT CHANGE CODE BELOW.
- * USE IT.
+ * USE IT.                          !!!!I WILL THINK ABOUT IT :):):)):):):):):):):):)):):)):)::):)):)::)!!!!!
  ****************************/
 
 
